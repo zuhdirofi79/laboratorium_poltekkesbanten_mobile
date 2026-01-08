@@ -1,0 +1,6 @@
+laboratorium.poltekkesbanten.ac.id:2083
+adminlab
+pass: vD53U.5R2,
+
+[08.43, 8/1/2026] Mas Azhar Senior IT Poltekkes Kemenkes Serang Banten: Ini akses cpanelnya ya, untuk php dan database yg lab
+[08.43, 8/1/2026] Mas Azhar Senior IT Poltekkes Kemenkes Serang Banten: SILab
