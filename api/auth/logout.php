@@ -18,14 +18,9 @@
  * }
  */
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Content-Type: application/json; charset=utf-8');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+require_once __DIR__ . '/../config/bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -36,26 +31,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/response.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../config/audit_logger.php';
 
 try {
-    // Validate token and get user
     $user = AuthMiddleware::validateToken();
     
-    // Get token from header
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
     preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches);
     $token = $matches[1] ?? '';
     $tokenHash = hash('sha256', $token);
     
-    // Delete token from database
     $db = Database::getInstance()->getConnection();
     $stmt = $db->prepare("DELETE FROM api_tokens WHERE token_hash = :token_hash");
     $stmt->execute(['token_hash' => $tokenHash]);
     
+    AuditLogger::logout($user['id'], $tokenHash);
+    
     ResponseHelper::success(null, 'Logout berhasil');
     
 } catch (Exception $e) {
-    error_log("Logout error: " . $e->getMessage());
+    AuditLogger::exception($e, ['action' => 'logout']);
     ResponseHelper::error('Terjadi kesalahan saat logout', 500);
 }

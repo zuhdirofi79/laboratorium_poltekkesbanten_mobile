@@ -1,12 +1,15 @@
 <?php
-/**
- * Database Configuration
- * 
- * Purpose: Isolated database connection for API layer
- * Does NOT interfere with existing web system's database connection
- * 
- * Location: api/config/database.php
- */
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
+if (!file_exists(__DIR__ . '/../../logs')) {
+    @mkdir(__DIR__ . '/../../logs', 0755, true);
+}
+
+ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+
+date_default_timezone_set('Asia/Jakarta');
 
 class Database {
     private static $instance = null;
@@ -14,9 +17,9 @@ class Database {
     
     // Database credentials - UPDATE THESE with your actual values
     private const DB_HOST = 'localhost';
-    private const DB_NAME = 'adminlab_polkes';
-    private const DB_USER = 'your_db_username';  // UPDATE THIS
-    private const DB_PASS = 'your_db_password';  // UPDATE THIS
+    private const DB_NAME = 'u708283844_sisenes';
+    private const DB_USER = 'u708283844_sisenes';  // UPDATE THIS
+    private const DB_PASS = 'FF{D]}J1!]Pj';  // UPDATE THIS
     private const DB_CHARSET = 'utf8mb4';
     
     private function __construct() {

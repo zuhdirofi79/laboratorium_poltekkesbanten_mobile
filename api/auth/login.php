@@ -1,13 +1,14 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once __DIR__ . '/../middleware/cors.php';
+require_once __DIR__ . '/../middleware/rate_limit.php';
+require_once __DIR__ . '/../middleware/request_validator.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/audit_logger.php';
+
+CorsMiddleware::handle();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -18,60 +19,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-require_once __DIR__ . '/../config/database.php';
-
 try {
-    $rawInput = file_get_contents('php://input');
+    $input = RequestValidator::validateJsonInput();
+    RequestValidator::validateRequired($input, ['username', 'password']);
     
-    if (empty($rawInput)) {
+    $username = trim($input['username']);
+    $password = $input['password'];
+    
+    if (empty($username) || empty($password)) {
         http_response_code(400);
         echo json_encode([
             'success' => false,
-            'message' => 'Request body is required'
+            'message' => 'Username and password are required'
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
     
-    $input = json_decode($rawInput, true);
-    
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Invalid JSON format: ' . json_last_error_msg()
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-    
-    if (!is_array($input)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Invalid request format. Expected JSON object.'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-    
-    $username = isset($input['username']) ? trim($input['username']) : '';
-    $password = isset($input['password']) ? $input['password'] : '';
-    
-    if (empty($username)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Username is required'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-    
-    if (empty($password)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Password is required'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
+    RateLimiter::checkLoginLimit($username);
     
     $db = Database::getInstance()->getConnection();
     
@@ -87,26 +51,24 @@ try {
     $stmt->execute(['username' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if (!$user) {
+    require_once __DIR__ . '/../config/security_helpers.php';
+    $clientIp = SecurityHelpers::getClientIp();
+    $userAgent = SecurityHelpers::getUserAgent();
+    
+    if (!$user || empty($user['password'])) {
+        RateLimiter::recordFailedAttempt($username);
+        AuditLogger::loginFail($username, $clientIp, $userAgent, 'user_not_found');
         http_response_code(401);
         echo json_encode([
             'success' => false,
             'message' => 'Username atau password salah'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-    
-    if (empty($user['password'])) {
-        error_log("Login attempt for user ID {$user['id']} with empty password hash");
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Terjadi kesalahan saat login'
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
     
     if (!password_verify($password, $user['password'])) {
+        RateLimiter::recordFailedAttempt($username);
+        AuditLogger::invalidCredentials($username, $clientIp, $userAgent);
         http_response_code(401);
         echo json_encode([
             'success' => false,
@@ -115,21 +77,29 @@ try {
         exit;
     }
     
+    RateLimiter::resetLoginAttempts($username);
+    
     $token = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $token);
-    $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
+    $expiresAt = date('Y-m-d H:i:s', strtotime('+7 days'));
+    $currentTime = date('Y-m-d H:i:s');
     
     $stmt = $db->prepare("
-        INSERT INTO api_tokens (user_id, token, token_hash, expires_at)
-        VALUES (:user_id, :token, :token_hash, :expires_at)
+        INSERT INTO api_tokens (user_id, token_hash, last_ip, last_user_agent, last_used_at, expires_at)
+        VALUES (:user_id, :token_hash, :last_ip, :last_user_agent, :last_used_at, :expires_at)
     ");
     
     $stmt->execute([
         'user_id' => $user['id'],
-        'token' => $token,
         'token_hash' => $tokenHash,
+        'last_ip' => $clientIp,
+        'last_user_agent' => $userAgent,
+        'last_used_at' => $currentTime,
         'expires_at' => $expiresAt
     ]);
+    
+    AuditLogger::tokenCreated($user['id'], $tokenHash);
+    AuditLogger::loginSuccess($user['id'], $user['username'], $clientIp, $userAgent);
     
     unset($user['password']);
     
@@ -154,7 +124,7 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     
 } catch (PDOException $e) {
-    error_log("Login PDO error: " . $e->getMessage());
+    AuditLogger::dbError($e->getMessage(), 'login_query');
     http_response_code(500);
     echo json_encode([
         'success' => false,
@@ -162,7 +132,7 @@ try {
     ], JSON_UNESCAPED_UNICODE);
     exit;
 } catch (Exception $e) {
-    error_log("Login error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+    AuditLogger::exception($e, ['action' => 'login']);
     http_response_code(500);
     echo json_encode([
         'success' => false,

@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS `api_tokens` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` bigint UNSIGNED NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expires_at` timestamp NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,

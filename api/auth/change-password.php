@@ -24,14 +24,9 @@
  * }
  */
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Content-Type: application/json; charset=utf-8');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+require_once __DIR__ . '/../config/bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -42,25 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/response.php';
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../middleware/request_validator.php';
+require_once __DIR__ . '/../config/audit_logger.php';
 
 try {
-    // Validate token and get user
     $user = AuthMiddleware::validateToken();
     
-    // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = RequestValidator::validateJsonInput();
+    RequestValidator::validateRequired($input, ['old_password', 'new_password']);
     
-    if (!$input) {
-        ResponseHelper::error('Invalid JSON input', 400);
-    }
-    
-    $oldPassword = $input['old_password'] ?? '';
-    $newPassword = $input['new_password'] ?? '';
-    
-    // Validate input
-    if (empty($oldPassword) || empty($newPassword)) {
-        ResponseHelper::error('Old password and new password are required', 400);
-    }
+    $oldPassword = $input['old_password'];
+    $newPassword = $input['new_password'];
     
     // Validate new password length (minimum 6 characters)
     if (strlen($newPassword) < 6) {
@@ -87,16 +74,17 @@ try {
     // Hash new password (bcrypt)
     $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
     
-    // Update password
     $stmt = $db->prepare("UPDATE users SET password = :password WHERE id = :user_id");
     $stmt->execute([
         'password' => $newPasswordHash,
         'user_id' => $user['id']
     ]);
     
+    AuditLogger::passwordChange($user['id']);
+    
     ResponseHelper::success(null, 'Password berhasil diubah');
     
 } catch (Exception $e) {
-    error_log("Change password error: " . $e->getMessage());
+    AuditLogger::exception($e, ['action' => 'change_password']);
     ResponseHelper::error('Terjadi kesalahan saat mengubah password', 500);
 }
