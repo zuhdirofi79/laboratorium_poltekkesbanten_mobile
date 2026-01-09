@@ -158,6 +158,19 @@ class ApiRateLimit {
                         
                         AuditLogger::rateLimitHit($identifier, $identifierType, $endpoint);
                         
+                        require_once __DIR__ . '/../config/alert_engine.php';
+                        AlertEngine::check('EXCESSIVE_REQUESTS', [
+                            'ip_address' => $identifierType === 'ip' ? $identifier : SecurityHelpers::getClientIp(),
+                            'token_hash' => $identifierType === 'token' ? $identifier : null,
+                            'endpoint' => $endpoint,
+                            'status' => 'FAIL',
+                            'metadata' => [
+                                'identifier_type' => $identifierType,
+                                'request_count' => $requestCount,
+                                'limit' => $limit
+                            ]
+                        ]);
+                        
                         http_response_code(429);
                         header('Content-Type: application/json; charset=utf-8');
                         header('Retry-After: ' . self::WINDOW_SECONDS);

@@ -7,6 +7,12 @@ require_once __DIR__ . '/../config/audit_logger.php';
 class AuthMiddleware {
     private static $cachedUser = null;
     
+    private static function getCurrentEndpoint() {
+        $endpoint = $_SERVER['REQUEST_URI'] ?? '/';
+        $endpoint = parse_url($endpoint, PHP_URL_PATH);
+        return substr($endpoint, 0, 255) ?: '/';
+    }
+    
     private static function getAuthorizationHeader() {
         $headers = getallheaders();
         
@@ -111,6 +117,14 @@ class AuthMiddleware {
             if (!$result) {
                 $db->rollBack();
                 AuditLogger::tokenExpired(null, $tokenHash);
+                
+                require_once __DIR__ . '/../config/alert_engine.php';
+                AlertEngine::check('TOKEN_INVALID', [
+                    'token_hash' => $tokenHash,
+                    'endpoint' => self::getCurrentEndpoint(),
+                    'status' => 'FAIL'
+                ]);
+                
                 ResponseHelper::unauthorized('Invalid or expired token');
             }
             
@@ -134,6 +148,17 @@ class AuthMiddleware {
                 self::revokeToken($db, $tokenHash, $revokeReason);
                 $db->commit();
                 AuditLogger::tokenReplay($result['user_id'], $currentIp, $currentUserAgent, $revokeReason);
+                
+                require_once __DIR__ . '/../config/alert_engine.php';
+                AlertEngine::check('TOKEN_MULTI_IP', [
+                    'token_hash' => $tokenHash,
+                    'user_id' => $result['user_id'],
+                    'ip_address' => $currentIp,
+                    'endpoint' => self::getCurrentEndpoint(),
+                    'status' => 'FAIL',
+                    'metadata' => ['reason' => $revokeReason]
+                ]);
+                
                 ResponseHelper::unauthorized('Session expired. Please login again.');
             }
             
@@ -144,6 +169,17 @@ class AuthMiddleware {
                     self::revokeToken($db, $tokenHash, $revokeReason);
                     $db->commit();
                     AuditLogger::tokenReplay($result['user_id'], $currentIp, $currentUserAgent, $revokeReason);
+                    
+                    require_once __DIR__ . '/../config/alert_engine.php';
+                    AlertEngine::check('TOKEN_MULTI_IP', [
+                        'token_hash' => $tokenHash,
+                        'user_id' => $result['user_id'],
+                        'ip_address' => $currentIp,
+                        'endpoint' => self::getCurrentEndpoint(),
+                        'status' => 'FAIL',
+                        'metadata' => ['reason' => $revokeReason, 'last_ip' => $lastIp]
+                    ]);
+                    
                     ResponseHelper::unauthorized('Session expired. Please login again.');
                 }
             }
@@ -211,6 +247,15 @@ class AuthMiddleware {
             
             if (!in_array($user['role'], $allowedRoles)) {
                 AuditLogger::forbidden($user['id'], implode(', ', $allowedRoles));
+                
+                require_once __DIR__ . '/../config/alert_engine.php';
+                AlertEngine::check('REPEATED_403', [
+                    'user_id' => $user['id'],
+                    'endpoint' => self::getCurrentEndpoint(),
+                    'status' => 'FAIL',
+                    'metadata' => ['required_role' => implode(', ', $allowedRoles), 'user_role' => $user['role']]
+                ]);
+                
                 ResponseHelper::forbidden('Access denied. Required role: ' . implode(', ', $allowedRoles));
             }
         }

@@ -58,6 +58,14 @@ try {
     if (!$user || empty($user['password'])) {
         RateLimiter::recordFailedAttempt($username);
         AuditLogger::loginFail($username, $clientIp, $userAgent, 'user_not_found');
+        
+        require_once __DIR__ . '/../config/alert_engine.php';
+        AlertEngine::check('AUTH_FAILURE', [
+            'ip_address' => $clientIp,
+            'endpoint' => '/auth/login.php',
+            'status' => 'FAIL'
+        ]);
+        
         http_response_code(401);
         echo json_encode([
             'success' => false,
@@ -69,6 +77,14 @@ try {
     if (!password_verify($password, $user['password'])) {
         RateLimiter::recordFailedAttempt($username);
         AuditLogger::invalidCredentials($username, $clientIp, $userAgent);
+        
+        require_once __DIR__ . '/../config/alert_engine.php';
+        AlertEngine::check('AUTH_FAILURE', [
+            'ip_address' => $clientIp,
+            'endpoint' => '/auth/login.php',
+            'status' => 'FAIL'
+        ]);
+        
         http_response_code(401);
         echo json_encode([
             'success' => false,
