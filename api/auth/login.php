@@ -1,72 +1,80 @@
 <?php
-/**
- * Login Endpoint
- * 
- * Purpose: Authenticate user and return API token
- * Does NOT use PHP sessions - returns token for stateless authentication
- * 
- * Location: api/auth/login.php
- * 
- * Endpoint: POST /api/auth/login.php
- * 
- * Request Body (JSON):
- * {
- *   "username": "99999",
- *   "password": "password123"
- * }
- * 
- * Response:
- * {
- *   "success": true,
- *   "data": {
- *     "token": "random_token_string",
- *     "user": {...}
- *   },
- *   "message": "Login berhasil"
- * }
- */
-
-// Set CORS headers (adjust as needed)
+header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Method not allowed. Only POST method is accepted.'
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/response.php';
 
 try {
-    // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
     
-    if (!$input) {
-        ResponseHelper::error('Invalid JSON input', 400);
+    if (empty($rawInput)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Request body is required'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
     
-    $username = trim($input['username'] ?? '');
-    $password = $input['password'] ?? '';
+    $input = json_decode($rawInput, true);
     
-    // Validate input
-    if (empty($username) || empty($password)) {
-        ResponseHelper::error('Username and password are required', 400);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid JSON format: ' . json_last_error_msg()
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
     
-    // Get database connection
+    if (!is_array($input)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid request format. Expected JSON object.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
+    $username = isset($input['username']) ? trim($input['username']) : '';
+    $password = isset($input['password']) ? $input['password'] : '';
+    
+    if (empty($username)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Username is required'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
+    if (empty($password)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Password is required'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
     $db = Database::getInstance()->getConnection();
     
-    // Find user by username
     $stmt = $db->prepare("
         SELECT 
             id, name, email, username, foto_profile, 
@@ -77,26 +85,40 @@ try {
     ");
     
     $stmt->execute(['username' => $username]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // Verify user exists and password is correct
     if (!$user) {
-        ResponseHelper::error('Username atau password salah', 401);
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Username atau password salah'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
     
-    // Verify password (bcrypt hash from Laravel)
+    if (empty($user['password'])) {
+        error_log("Login attempt for user ID {$user['id']} with empty password hash");
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Terjadi kesalahan saat login'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
     if (!password_verify($password, $user['password'])) {
-        ResponseHelper::error('Username atau password salah', 401);
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Username atau password salah'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
     
-    // Generate secure token
-    $token = bin2hex(random_bytes(32)); // 64 character hex string
+    $token = bin2hex(random_bytes(32));
     $tokenHash = hash('sha256', $token);
-    
-    // Token expires in 30 days
     $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
     
-    // Store token in database
     $stmt = $db->prepare("
         INSERT INTO api_tokens (user_id, token, token_hash, expires_at)
         VALUES (:user_id, :token, :token_hash, :expires_at)
@@ -104,31 +126,47 @@ try {
     
     $stmt->execute([
         'user_id' => $user['id'],
-        'token' => $token, // Store plain token for reference (optional, can be removed)
+        'token' => $token,
         'token_hash' => $tokenHash,
         'expires_at' => $expiresAt
     ]);
     
-    // Remove sensitive data from response
     unset($user['password']);
     
-    // Return success response
-    ResponseHelper::success([
-        'token' => $token,
-        'user' => [
-            'id' => (int)$user['id'],
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'username' => $user['username'],
-            'foto_profile' => $user['foto_profile'],
-            'jenis_kelamin' => $user['jenis_kelamin'],
-            'no_hp' => $user['no_hp'],
-            'jurusan' => $user['jurusan'],
-            'role' => $user['role']
+    http_response_code(200);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Login berhasil',
+        'data' => [
+            'token' => $token,
+            'user' => [
+                'id' => (int)$user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'username' => $user['username'],
+                'foto_profile' => $user['foto_profile'],
+                'jenis_kelamin' => $user['jenis_kelamin'],
+                'no_hp' => $user['no_hp'],
+                'jurusan' => $user['jurusan'],
+                'role' => $user['role']
+            ]
         ]
-    ], 'Login berhasil');
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     
+} catch (PDOException $e) {
+    error_log("Login PDO error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Terjadi kesalahan saat login'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
 } catch (Exception $e) {
-    error_log("Login error: " . $e->getMessage());
-    ResponseHelper::error('Terjadi kesalahan saat login', 500);
+    error_log("Login error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Terjadi kesalahan saat login'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
 }

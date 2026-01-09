@@ -30,13 +30,13 @@ class Database {
             
             $this->connection = new PDO($dsn, self::DB_USER, self::DB_PASS, $options);
         } catch (PDOException $e) {
-            // Log error but don't expose database details
             error_log("Database connection failed: " . $e->getMessage());
             http_response_code(500);
+            header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
                 'message' => 'Database connection error'
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
             exit;
         }
     }
