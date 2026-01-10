@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/security_helpers.php';
 require_once __DIR__ . '/audit_logger.php';
+require_once __DIR__ . '/reputation_engine.php';
 require_once __DIR__ . '/alert_engine.php';
 require_once __DIR__ . '/../middleware/cors.php';
 require_once __DIR__ . '/../middleware/api_rate_limit.php';

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/audit_logger.php';
 require_once __DIR__ . '/security_helpers.php';
+require_once __DIR__ . '/reputation_engine.php';
 
 class AlertEngine {
     private static $rulesCache = null;
@@ -258,6 +259,15 @@ class AlertEngine {
             $alertId = $db->lastInsertId();
             $db->commit();
             
+            $autoBlocked = false;
+            if ($severity === 'CRITICAL' && isset($rule['auto_action']['block_ip']) && $rule['auto_action']['block_ip']) {
+                $autoBlocked = true;
+            }
+            
+            if ($ipAddress && $ipAddress !== '0.0.0.0') {
+                ReputationEngine::recordIncident($ipAddress, $severity, $rule['rule_name'], $autoBlocked);
+            }
+            
             self::executeAutoActions($rule, $severity, $ipAddress, $tokenHash, $userId, $alertId);
             self::outputAlert($rule, $severity, $sourceValue, $sourceType, $count, $metadata, $alertId);
             
@@ -336,7 +346,11 @@ class AlertEngine {
         try {
             $db = Database::getInstance()->getConnection();
             
-            $blockedUntil = date('Y-m-d H:i:s', time() + $durationSeconds);
+            $reputation = ReputationEngine::getReputation($ipAddress);
+            $multiplier = $reputation['block_multiplier'];
+            $adjustedDuration = (int)($durationSeconds * $multiplier);
+            
+            $blockedUntil = date('Y-m-d H:i:s', time() + $adjustedDuration);
             
             $stmt = $db->prepare("
                 INSERT INTO blocked_ips (ip_address, blocked_at, blocked_until, reason, alert_id, auto_unblock)
@@ -350,11 +364,11 @@ class AlertEngine {
             $stmt->execute([
                 'ip_address' => $ipAddress,
                 'blocked_until' => $blockedUntil,
-                'reason' => $reason,
+                'reason' => $reason . ' (reputation: ' . $reputation['score'] . ', multiplier: ' . $multiplier . 'x)',
                 'alert_id' => $alertId
             ]);
             
-            error_log("AlertEngine: Blocked IP $ipAddress until $blockedUntil - Reason: $reason");
+            error_log("AlertEngine: Blocked IP $ipAddress until $blockedUntil - Reason: $reason - Reputation: {$reputation['score']} - Duration: {$adjustedDuration}s ({$multiplier}x)");
         } catch (Exception $e) {
             error_log("AlertEngine: Failed to block IP - " . $e->getMessage());
         }

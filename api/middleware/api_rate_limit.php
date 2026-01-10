@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/response.php';
 require_once __DIR__ . '/../config/audit_logger.php';
+require_once __DIR__ . '/../config/reputation_engine.php';
 
 class ApiRateLimit {
     const LIMIT_UNAUTHENTICATED = 60;
@@ -115,13 +116,21 @@ class ApiRateLimit {
         $isAuthenticated = false;
         $identifier = $ipAddress;
         $identifierType = 'ip';
-        $limit = self::LIMIT_UNAUTHENTICATED;
+        $baseLimit = self::LIMIT_UNAUTHENTICATED;
         
         if ($tokenHash && self::validateTokenExists($tokenHash)) {
             $isAuthenticated = true;
             $identifier = $tokenHash;
             $identifierType = 'token';
-            $limit = self::LIMIT_AUTHENTICATED;
+            $baseLimit = self::LIMIT_AUTHENTICATED;
+        }
+        
+        $reputation = ReputationEngine::getReputation($ipAddress);
+        $rateLimitMultiplier = $reputation['rate_limit_multiplier'];
+        $limit = (int)($baseLimit / $rateLimitMultiplier);
+        
+        if ($reputation['score'] > 0) {
+            error_log("ApiRateLimit: Adjusted limit for IP $ipAddress (reputation: {$reputation['score']}, multiplier: {$rateLimitMultiplier}x, base: $baseLimit, adjusted: $limit)");
         }
         
         try {
