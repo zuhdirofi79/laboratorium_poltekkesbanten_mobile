@@ -29,7 +29,7 @@ class ApiConfig {
   static const String authorizationBearer = 'Bearer';
   
   // Endpoints (Auth only - per contract v1.0)
-  static const String endpointLogin = '/auth/login';
+  static const String endpointLogin = '/auth/login.php';
   static const String endpointMe = '/auth/me';
   static const String endpointLogout = '/auth/logout';
   static const String endpointChangePassword = '/auth/change-password';

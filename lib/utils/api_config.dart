@@ -3,7 +3,7 @@ class ApiConfig {
   static const String baseUrl = 'https://laboratorium.poltekkesbanten.ac.id/api';
   
   // API Endpoints
-  static const String login = '/auth/login';
+  static const String login = '/auth/login.php';
   static const String logout = '/auth/logout';
   static const String profile = '/auth/profile';
   static const String changePassword = '/auth/change-password';
