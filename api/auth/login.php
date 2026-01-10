@@ -1,14 +1,42 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+// Handle CORS for Flutter Web - must be before any processing
+$origin = $_SERVER['HTTP_ORIGIN'] ?? null;
+
+// Set CORS headers for preflight and actual requests
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Version, User-Agent');
+header('Access-Control-Allow-Credentials: false');
+header('Access-Control-Max-Age: 86400');
+
+// Allow production domain
+if ($origin === 'https://laboratorium.poltekkesbanten.ac.id') {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+// Allow Flutter Web localhost origins (any port) - required for Flutter Web development
+elseif ($origin && (preg_match('#^http://localhost:\d+$#', $origin) || preg_match('#^http://127\.0\.0\.1:\d+$#', $origin))) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+// For other origins, bootstrap will handle via CorsMiddleware
+elseif ($origin) {
+    require_once __DIR__ . '/../config/security.php';
+    if (in_array($origin, SecurityConfig::ALLOWED_ORIGINS, true)) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+    }
+}
+
+// Handle OPTIONS preflight request - must exit before bootstrap
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 require_once __DIR__ . '/../config/bootstrap.php';
-require_once __DIR__ . '/../middleware/cors.php';
 require_once __DIR__ . '/../middleware/rate_limit.php';
 require_once __DIR__ . '/../middleware/request_validator.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/audit_logger.php';
-
-CorsMiddleware::handle();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
