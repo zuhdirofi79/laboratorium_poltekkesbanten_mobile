@@ -138,26 +138,34 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.science,
-                        size: 50,
-                        color: AppTheme.primaryColor,
-                      ),
+                    // Poltekkes Logo
+                    Image.asset(
+                      'assets/img/logo/poltekkeskemenkesbanten-logo.png',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(
+                            Icons.science,
+                            size: 50,
+                            color: AppTheme.primaryColor,
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 24),
                     const Text(
-                      'POLKES BANTEN',
+                      'SiLab',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -256,6 +264,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    // BLU Speed Logo (footer)
+                    Image.asset(
+                      'assets/img/logo/logo-blu-speed.png',
+                      width: 100,
+                      height: 50,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const SizedBox.shrink();
+                      },
                     ),
                   ],
                 ),

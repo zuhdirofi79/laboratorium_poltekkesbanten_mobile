@@ -89,7 +89,20 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         // Role verified - show user content
         return Scaffold(
           appBar: AppBar(
-            title: Text(_drawerItems[_currentIndex].title),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'SiLab',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  _drawerItems[_currentIndex].title,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
           ),
           drawer: AppDrawer(
             items: _drawerItems,

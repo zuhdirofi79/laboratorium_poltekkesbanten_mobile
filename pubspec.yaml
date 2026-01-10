@@ -45,6 +45,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/img/logo/poltekkeskemenkesbanten-logo.png
+    - assets/img/logo/logo-blu-speed.png
   
   fonts:
     - family: Roboto

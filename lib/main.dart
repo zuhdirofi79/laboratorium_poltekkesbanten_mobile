@@ -6,6 +6,8 @@ import 'features/auth/data/auth_models.dart';
 import 'features/equipment/presentation/equipment_provider.dart';
 import 'features/schedule/presentation/schedule_provider.dart';
 import 'features/plp_approval/presentation/plp_approval_provider.dart';
+import 'features/admin_users/presentation/admin_users_provider.dart';
+import 'features/admin_rooms/presentation/admin_rooms_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/admin/admin_home_screen.dart';
 import 'screens/plp/plp_home_screen.dart';
@@ -37,9 +39,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => PlpApprovalProvider.create(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => AdminUsersProvider.create(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AdminRoomsProvider.create(),
+        ),
       ],
       child: MaterialApp(
-        title: 'Laboratorium Poltekkes Banten',
+        title: 'SiLab',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: const AuthWrapper(),

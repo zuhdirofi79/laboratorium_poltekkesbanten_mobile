@@ -24,29 +24,54 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
+          DrawerHeader(
             decoration: const BoxDecoration(
               color: AppTheme.primaryColor,
             ),
-            accountName: Text(
-              user?.fullName ?? 'User',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            accountEmail: Text(user?.email ?? ''),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                user?.fullName.isNotEmpty == true
-                    ? user!.fullName[0].toUpperCase()
-                    : 'U',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Poltekkes Logo
+                Image.asset(
+                  'assets/img/logo/poltekkeskemenkesbanten-logo.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.science,
+                      size: 50,
+                      color: Colors.white,
+                    );
+                  },
                 ),
-              ),
+                const SizedBox(height: 12),
+                const Text(
+                  'SiLab',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  user?.fullName ?? 'User',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (user?.email != null && user!.email.isNotEmpty)
+                  Text(
+                    user.email,
+                    style: const TextStyle(
+                      color: Colors.white60,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
             ),
           ),
           Expanded(
@@ -140,6 +165,20 @@ class AppDrawer extends StatelessWidget {
                 // Navigation is handled automatically by AuthWrapper based on AuthState
               }
             },
+          ),
+          const Divider(),
+          // BLU Speed Logo (footer)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Image.asset(
+              'assets/img/logo/logo-blu-speed.png',
+              width: 100,
+              height: 50,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ],
       ),
