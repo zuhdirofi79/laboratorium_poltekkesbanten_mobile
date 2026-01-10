@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/app_drawer.dart';
+import '../../providers/auth_state_provider.dart';
+import '../../utils/app_theme.dart';
 import 'plp_daftar_barang_screen.dart';
 import 'plp_jadwal_praktikum_screen.dart';
 import 'plp_request_peralatan_screen.dart';
@@ -87,16 +90,46 @@ class _PLPHomeScreenState extends State<PLPHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_drawerItems[_currentIndex].title),
-      ),
-      drawer: AppDrawer(
-        items: _drawerItems,
-        currentRoute: _drawerItems[_currentIndex].route,
-        onItemTap: _onDrawerItemTap,
-      ),
-      body: _screens[_currentIndex],
+    return Consumer<AuthStateProvider>(
+      builder: (context, authProvider, child) {
+        final user = authProvider.currentUser;
+
+        // Verify role - block access if role mismatch
+        if (user == null || !user.role.isPlp) {
+          // Role mismatch or not authenticated - redirect to login
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Akses ditolak: Hanya PLP yang dapat mengakses halaman ini'),
+                  backgroundColor: AppTheme.errorColor,
+                ),
+              );
+              Navigator.of(context).pushReplacementNamed('/login');
+            }
+          });
+          
+          return Scaffold(
+            appBar: AppBar(title: const Text('Akses Ditolak')),
+            body: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Role verified - show PLP content
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(_drawerItems[_currentIndex].title),
+          ),
+          drawer: AppDrawer(
+            items: _drawerItems,
+            currentRoute: _drawerItems[_currentIndex].route,
+            onItemTap: _onDrawerItemTap,
+          ),
+          body: _screens[_currentIndex],
+        );
+      },
     );
   }
 }

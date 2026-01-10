@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/auth_state_provider.dart';
+import '../../features/auth/domain/auth_state.dart';
+import '../../core/errors/failure.dart';
+import '../../core/errors/error_code.dart';
 import '../../utils/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,10 +20,67 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to auth state changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+      authProvider.addListener(_onAuthStateChanged);
+    });
+  }
+
+  @override
   void dispose() {
+    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+    authProvider.removeListener(_onAuthStateChanged);
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _onAuthStateChanged() {
+    if (!mounted) return;
+
+    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+    final state = authProvider.authState;
+
+    // Handle navigation based on state
+    // Navigation is handled by AuthWrapper in main.dart, but we show errors here
+    if (state is AuthError) {
+      final failure = state.failure;
+      final message = _getErrorMessage(failure);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: AppTheme.errorColor,
+        ),
+      );
+    }
+  }
+
+  String _getErrorMessage(Failure failure) {
+    // Use error_code for UI decisions, not string comparison
+    // Check Failure type first (NetworkFailure is a type, not ErrorCode)
+    if (failure is NetworkFailure) {
+      return 'Tidak ada koneksi internet. Silakan periksa koneksi Anda.';
+    }
+
+    // Then check error_code for other failures
+    switch (failure.errorCode) {
+      case ErrorCode.authInvalidCredentials:
+        return 'Username atau password salah';
+      case ErrorCode.authInvalidToken:
+        return 'Sesi tidak valid, silakan login lagi';
+      case ErrorCode.authTokenExpired:
+        return 'Sesi telah berakhir, silakan login lagi';
+      case ErrorCode.validationError:
+        return 'Data tidak valid: ${failure.message}';
+      default:
+        return failure.message.isNotEmpty 
+            ? failure.message 
+            : 'Login gagal. Silakan coba lagi.';
+    }
   }
 
   Future<void> _handleLogin() async {
@@ -28,46 +88,30 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+    
+    // Call login through AuthStateProvider
+    // It will update AuthState which triggers navigation in AuthWrapper
     final success = await authProvider.login(
       _usernameController.text.trim(),
       _passwordController.text,
     );
 
-    if (mounted) {
-      if (success) {
-        await authProvider.saveUserToStorage();
-        _navigateByRole(authProvider.user?.role ?? '');
-      } else {
+    // Note: Navigation is handled automatically by AuthWrapper based on AuthState
+    // If login fails, state will be AuthError and error will be shown in _onAuthStateChanged
+    if (!success && mounted) {
+      final state = authProvider.authState;
+      if (state is AuthError) {
+        final failure = state.failure;
+        final message = _getErrorMessage(failure);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? 'Login gagal'),
+            content: Text(message),
             backgroundColor: AppTheme.errorColor,
           ),
         );
       }
-    }
-  }
-
-  void _navigateByRole(String role) {
-    switch (role.toLowerCase()) {
-      case 'admin':
-        Navigator.of(context).pushReplacementNamed('/admin');
-        break;
-      case 'plp':
-        Navigator.of(context).pushReplacementNamed('/plp');
-        break;
-      case 'user':
-      case 'mahasiswa':
-        Navigator.of(context).pushReplacementNamed('/user');
-        break;
-      default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Role tidak dikenal'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
     }
   }
 
@@ -187,16 +231,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             const SizedBox(height: 24),
-                            Consumer<AuthProvider>(
+                            Consumer<AuthStateProvider>(
                               builder: (context, authProvider, child) {
+                                final isLoading = authProvider.isLoading;
                                 return ElevatedButton(
-                                  onPressed: authProvider.isLoading
-                                      ? null
-                                      : _handleLogin,
+                                  onPressed: isLoading ? null : _handleLogin,
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                   ),
-                                  child: authProvider.isLoading
+                                  child: isLoading
                                       ? const SizedBox(
                                           height: 20,
                                           width: 20,

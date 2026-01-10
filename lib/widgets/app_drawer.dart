@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
+import '../providers/auth_state_provider.dart';
 import '../utils/app_theme.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -17,8 +17,9 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
+    return Consumer<AuthStateProvider>(
+      builder: (context, authProvider, child) {
+        final user = authProvider.currentUser;
 
     return Drawer(
       child: Column(
@@ -28,7 +29,7 @@ class AppDrawer extends StatelessWidget {
               color: AppTheme.primaryColor,
             ),
             accountName: Text(
-              user?.nama ?? 'User',
+              user?.fullName ?? 'User',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -37,8 +38,8 @@ class AppDrawer extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                user?.nama.isNotEmpty == true
-                    ? user!.nama[0].toUpperCase()
+                user?.fullName.isNotEmpty == true
+                    ? user!.fullName[0].toUpperCase()
                     : 'U',
                 style: const TextStyle(
                   fontSize: 24,
@@ -136,17 +137,14 @@ class AppDrawer extends StatelessWidget {
 
               if (confirm == true && context.mounted) {
                 await authProvider.logout();
-                if (context.mounted) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login',
-                    (route) => false,
-                  );
-                }
+                // Navigation is handled automatically by AuthWrapper based on AuthState
               }
             },
           ),
         ],
       ),
+    );
+      },
     );
   }
 }
