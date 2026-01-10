@@ -18,35 +18,54 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  
+  // Store provider reference for safe access in dispose()
+  // Context is deactivated during dispose(), so we cannot access Provider.of(context) safely
+  // Solution: store the reference in didChangeDependencies() where context is guaranteed to be valid
+  AuthStateProvider? _authProvider;
 
   @override
-  void initState() {
-    super.initState();
-    // Listen to auth state changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
-      authProvider.addListener(_onAuthStateChanged);
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Safe to access context here - didChangeDependencies() is called when context is valid
+    // Store provider reference for use in dispose() and other methods
+    if (_authProvider == null) {
+      _authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+      // Listen to auth state changes
+      _authProvider!.addListener(_onAuthStateChanged);
+    }
   }
 
   @override
   void dispose() {
-    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
-    authProvider.removeListener(_onAuthStateChanged);
+    // Do not access context directly here - context is deactivated during dispose()
+    // Use stored provider reference instead to safely remove listener
+    if (_authProvider != null) {
+      _authProvider!.removeListener(_onAuthStateChanged);
+    }
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _onAuthStateChanged() {
+    // Ensure widget is still mounted before accessing context or updating UI
+    // This prevents "deactivated widget" errors when async operations complete after widget disposal
     if (!mounted) return;
 
-    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+    // Use stored provider reference - safer than accessing via context in callbacks
+    // However, we can still access via context here since we've checked mounted
+    // But using stored reference is more consistent and safer
+    final authProvider = _authProvider ?? Provider.of<AuthStateProvider>(context, listen: false);
     final state = authProvider.authState;
 
     // Handle navigation based on state
     // Navigation is handled by AuthWrapper in main.dart, but we show errors here
     if (state is AuthError) {
+      // Double-check mounted before using ScaffoldMessenger which requires context
+      // Context could theoretically become invalid between the first check and here
+      if (!mounted) return;
+      
       final failure = state.failure;
       final message = _getErrorMessage(failure);
       
@@ -88,7 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final authProvider = Provider.of<AuthStateProvider>(context, listen: false);
+    // Use stored provider reference if available, otherwise get from context
+    final authProvider = _authProvider ?? Provider.of<AuthStateProvider>(context, listen: false);
     
     // Call login through AuthStateProvider
     // It will update AuthState which triggers navigation in AuthWrapper
@@ -99,9 +119,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Note: Navigation is handled automatically by AuthWrapper based on AuthState
     // If login fails, state will be AuthError and error will be shown in _onAuthStateChanged
+    // Check mounted after async operation to ensure widget is still active before updating UI
     if (!success && mounted) {
       final state = authProvider.authState;
       if (state is AuthError) {
+        // Additional mounted check before using ScaffoldMessenger
+        if (!mounted) return;
+        
         final failure = state.failure;
         final message = _getErrorMessage(failure);
         

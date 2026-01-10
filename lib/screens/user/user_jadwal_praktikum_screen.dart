@@ -144,7 +144,7 @@ class _UserJadwalPraktikumScreenState extends State<UserJadwalPraktikumScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: AppTheme.errorColor,

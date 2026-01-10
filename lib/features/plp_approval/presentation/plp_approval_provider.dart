@@ -125,7 +125,7 @@ class PlpApprovalProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = PlpApprovalError(
+      _state = const PlpApprovalError(
         ServerFailure(
           message: 'PLP approval repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -198,7 +198,7 @@ class PlpApprovalProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = PlpApprovalError(
+      _state = const PlpApprovalError(
         ServerFailure(
           message: 'PLP approval repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -259,7 +259,7 @@ class PlpApprovalProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = PlpApprovalError(
+      _state = const PlpApprovalError(
         ServerFailure(
           message: 'PLP approval repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -323,7 +323,7 @@ class PlpApprovalProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = PlpApprovalError(
+      _state = const PlpApprovalError(
         ServerFailure(
           message: 'PLP approval repository not initialized',
           errorCode: ErrorCode.unknown,

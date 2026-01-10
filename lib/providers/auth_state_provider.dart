@@ -83,7 +83,7 @@ class AuthStateProvider with ChangeNotifier {
   /// State is automatically updated on success
   Future<bool> login(String username, String password) async {
     if (_authRepository == null) {
-      _authState = AuthError(
+      _authState = const AuthError(
         ServerFailure(
           message: 'Auth repository not initialized',
           errorCode: ErrorCode.unknown,

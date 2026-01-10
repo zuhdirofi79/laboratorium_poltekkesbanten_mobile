@@ -112,7 +112,7 @@ class AdminRoomsProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminRoomsError(
+      _state = const AdminRoomsError(
         ServerFailure(
           message: 'Admin rooms repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -183,7 +183,7 @@ class AdminRoomsProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminRoomsError(
+      _state = const AdminRoomsError(
         ServerFailure(
           message: 'Admin rooms repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -205,7 +205,7 @@ class AdminRoomsProvider with ChangeNotifier {
         campus: campus,
       );
       
-      _state = AdminRoomsActionSuccess(
+      _state = const AdminRoomsActionSuccess(
         message: 'Ruangan berhasil ditambahkan',
       );
       Logger.info('Room added successfully: $labName');
@@ -255,7 +255,7 @@ class AdminRoomsProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminRoomsError(
+      _state = const AdminRoomsError(
         ServerFailure(
           message: 'Admin rooms repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -278,7 +278,7 @@ class AdminRoomsProvider with ChangeNotifier {
         campus: campus,
       );
       
-      _state = AdminRoomsActionSuccess(
+      _state = const AdminRoomsActionSuccess(
         message: 'Ruangan berhasil diupdate',
       );
       Logger.info('Room updated successfully: $id');
@@ -323,7 +323,7 @@ class AdminRoomsProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminRoomsError(
+      _state = const AdminRoomsError(
         ServerFailure(
           message: 'Admin rooms repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -341,7 +341,7 @@ class AdminRoomsProvider with ChangeNotifier {
       
       await _repository!.deleteRoom(id);
       
-      _state = AdminRoomsActionSuccess(
+      _state = const AdminRoomsActionSuccess(
         message: 'Ruangan berhasil dihapus',
       );
       Logger.info('Room deleted successfully: $id');

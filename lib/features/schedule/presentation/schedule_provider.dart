@@ -109,7 +109,7 @@ class ScheduleProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = ScheduleError(
+      _state = const ScheduleError(
         ServerFailure(
           message: 'Schedule repository not initialized',
           errorCode: ErrorCode.unknown,

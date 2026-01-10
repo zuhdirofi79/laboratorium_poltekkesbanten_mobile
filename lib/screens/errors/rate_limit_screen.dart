@@ -38,18 +38,23 @@ class _RateLimitScreenState extends State<RateLimitScreen> {
 
   void _startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
+      if (_remainingSeconds > 0) {
         setState(() {
-          if (_remainingSeconds > 0) {
-            _remainingSeconds--;
-          } else {
-            timer.cancel();
-            // Auto-navigate back to login when countdown ends
-            Navigator.of(context).pushReplacementNamed('/login');
-          }
+          _remainingSeconds--;
         });
       } else {
         timer.cancel();
+        // Auto-navigate back to login when countdown ends
+        // Check mounted again before Navigator call to ensure context is still valid
+        // Navigator calls should be outside setState for better safety and performance
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
       }
     });
   }

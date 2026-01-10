@@ -108,7 +108,7 @@ class EquipmentProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = EquipmentError(
+      _state = const EquipmentError(
         ServerFailure(
           message: 'Equipment repository not initialized',
           errorCode: ErrorCode.unknown,

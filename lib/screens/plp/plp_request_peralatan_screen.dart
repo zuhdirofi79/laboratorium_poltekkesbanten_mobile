@@ -146,7 +146,7 @@ class _PLPRequestPeralatanScreenState extends State<PLPRequestPeralatanScreen> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           decoration: const InputDecoration(labelText: 'Jurusan'),
-                          value: _selectedJurusan,
+                          initialValue: _selectedJurusan,
                           items: const [
                             DropdownMenuItem(value: 'all', child: Text('Semua Jurusan')),
                             DropdownMenuItem(value: 'kebidanan', child: Text('Kebidanan')),
@@ -209,7 +209,7 @@ class _PLPRequestPeralatanScreenState extends State<PLPRequestPeralatanScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               size: 64,
               color: AppTheme.errorColor,

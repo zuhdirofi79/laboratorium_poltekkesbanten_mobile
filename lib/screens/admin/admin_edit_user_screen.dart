@@ -182,7 +182,7 @@ class _AdminEditUserScreenState extends State<AdminEditUserScreen> {
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Role'),
-                    value: _selectedRole,
+                    initialValue: _selectedRole,
                     items: const [
                       DropdownMenuItem(value: 'admin', child: Text('Admin')),
                       DropdownMenuItem(value: 'plp', child: Text('PLP')),

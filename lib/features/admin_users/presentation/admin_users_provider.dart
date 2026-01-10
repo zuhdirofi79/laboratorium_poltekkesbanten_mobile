@@ -112,7 +112,7 @@ class AdminUsersProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminUsersError(
+      _state = const AdminUsersError(
         ServerFailure(
           message: 'Admin users repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -183,7 +183,7 @@ class AdminUsersProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminUsersError(
+      _state = const AdminUsersError(
         ServerFailure(
           message: 'Admin users repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -257,7 +257,7 @@ class AdminUsersProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminUsersError(
+      _state = const AdminUsersError(
         ServerFailure(
           message: 'Admin users repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -282,7 +282,7 @@ class AdminUsersProvider with ChangeNotifier {
         role: role,
       );
       
-      _state = AdminUsersActionSuccess(
+      _state = const AdminUsersActionSuccess(
         message: 'User berhasil ditambahkan',
       );
       Logger.info('User added successfully: $username');
@@ -334,7 +334,7 @@ class AdminUsersProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminUsersError(
+      _state = const AdminUsersError(
         ServerFailure(
           message: 'Admin users repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -359,7 +359,7 @@ class AdminUsersProvider with ChangeNotifier {
         role: role,
       );
       
-      _state = AdminUsersActionSuccess(
+      _state = const AdminUsersActionSuccess(
         message: 'User berhasil diupdate',
       );
       Logger.info('User updated successfully: $id');
@@ -404,7 +404,7 @@ class AdminUsersProvider with ChangeNotifier {
     }
     
     if (_repository == null) {
-      _state = AdminUsersError(
+      _state = const AdminUsersError(
         ServerFailure(
           message: 'Admin users repository not initialized',
           errorCode: ErrorCode.unknown,
@@ -422,7 +422,7 @@ class AdminUsersProvider with ChangeNotifier {
       
       await _repository!.deleteUser(id);
       
-      _state = AdminUsersActionSuccess(
+      _state = const AdminUsersActionSuccess(
         message: 'User berhasil dihapus',
       );
       Logger.info('User deleted successfully: $id');
