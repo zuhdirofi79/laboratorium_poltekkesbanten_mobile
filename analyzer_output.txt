@@ -1,0 +1,100 @@
+﻿Analyzing laboratorium_poltekkesbanten_mobile...                
+
+warning - Unused import: '../features/auth/data/auth_models.dart' - lib\bootstrap\app_bootstrap.dart:7:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\core\network\api_client.dart:141:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\network\api_client.dart:147:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\network\api_client.dart:173:17 - prefer_const_constructors
+warning - Unused import: 'package:http/http.dart' - lib\core\network\api_interceptor.dart:1:8 - unused_import
+   info - The 'if' statement could be replaced by a null-aware assignment - lib\core\storage\token_storage.dart:28:7 - prefer_conditional_assignment
+   info - The 'if' statement could be replaced by a null-aware assignment - lib\core\storage\token_storage.dart:65:7 - prefer_conditional_assignment
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:10:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:12:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:15:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:22:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:27:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:31:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:33:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\utils\logger.dart:36:7 - avoid_print
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:115:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:116:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:186:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:187:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:208:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:258:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:259:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:281:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:326:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:327:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_rooms\presentation\admin_rooms_provider.dart:344:16 - prefer_const_constructors
+warning - Unused import: '../../../features/auth/data/auth_models.dart' - lib\features\admin_users\presentation\admin_users_provider.dart:12:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:116:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:117:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:187:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:188:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:261:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:262:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:286:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:338:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:339:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:363:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:408:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:409:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\admin_users\presentation\admin_users_provider.dart:426:16 - prefer_const_constructors
+   info - Dangling library doc comment - lib\features\auth\data\auth_models.dart:5:1 - dangling_library_doc_comments
+warning - The exception variable 'e' isn't used, so the 'catch' clause can be removed - lib\features\auth\data\auth_repository.dart:72:29 - unused_catch_clause
+   info - Use 'const' with the constructor to improve performance - lib\features\equipment\presentation\equipment_provider.dart:111:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\equipment\presentation\equipment_provider.dart:112:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:128:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:129:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:201:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:202:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:262:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:263:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:326:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\plp_approval\presentation\plp_approval_provider.dart:327:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\schedule\presentation\schedule_provider.dart:112:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\schedule\presentation\schedule_provider.dart:113:9 - prefer_const_constructors
+warning - The stack trace variable 'stackTrace' isn't used and can be removed - lib\providers\auth_state_provider.dart:69:17 - unused_catch_stack
+   info - Use 'const' with the constructor to improve performance - lib\providers\auth_state_provider.dart:86:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\providers\auth_state_provider.dart:87:9 - prefer_const_constructors
+warning - The stack trace variable 'stackTrace' isn't used and can be removed - lib\providers\auth_state_provider.dart:120:17 - unused_catch_stack
+warning - The stack trace variable 'stackTrace' isn't used and can be removed - lib\providers\auth_state_provider.dart:149:17 - unused_catch_stack
+warning - The exception variable 'e' isn't used, so the 'catch' clause can be removed - lib\providers\auth_state_provider.dart:172:29 - unused_catch_clause
+warning - The stack trace variable 'stackTrace' isn't used and can be removed - lib\providers\auth_state_provider.dart:189:17 - unused_catch_stack
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\admin\admin_add_user_screen.dart:174:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\admin\admin_edit_user_screen.dart:185:21 - deprecated_member_use
+   info - Use the 'is!' operator rather than negating the value of the 'is' operator - lib\screens\admin\admin_manage_user_screen.dart:31:41 - prefer_is_not_operator
+   info - Use 'const' with the constructor to improve performance - lib\screens\admin\admin_manage_user_screen.dart:175:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\admin\admin_master_data_screen.dart:181:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\admin\admin_users_screen.dart:196:13 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\auth\login_screen.dart:128:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\errors\rate_limit_screen.dart:76:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\errors\rate_limit_screen.dart:124:43 - deprecated_member_use
+warning - Unused import: '../../core/errors/failure.dart' - lib\screens\errors\security_blocked_screen.dart:3:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\errors\security_blocked_screen.dart:74:35 - deprecated_member_use
+warning - The operand can't be 'null', so the condition is always 'true' - lib\screens\errors\security_blocked_screen.dart:120:38 - unnecessary_null_comparison
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\errors\security_blocked_screen.dart:124:45 - deprecated_member_use
+warning - Unused import: '../../utils/app_theme.dart' - lib\screens\plp\plp_laporan_screen.dart:2:8 - unused_import
+warning - Unused import: '../../utils/app_theme.dart' - lib\screens\plp\plp_pinjaman_screen.dart:2:8 - unused_import
+warning - Unused import: '../../features/plp_approval/domain/equipment_request_detail.dart' - lib\screens\plp\plp_request_detail_screen.dart:6:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\screens\plp\plp_request_detail_screen.dart:190:13 - prefer_const_constructors
+warning - Unused import: '../../utils/app_theme.dart' - lib\screens\plp\plp_request_jadwal_screen.dart:2:8 - unused_import
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\screens\plp\plp_request_peralatan_screen.dart:149:27 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\plp\plp_request_peralatan_screen.dart:212:13 - prefer_const_constructors
+   info - Don't use 'BuildContext's across async gaps - lib\screens\splash_screen.dart:24:52 - use_build_context_synchronously
+warning - Unused import: '../../utils/app_theme.dart' - lib\screens\user\user_create_request_screen.dart:3:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\screens\user\user_jadwal_praktikum_screen.dart:147:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\user\user_request_peralatan_screen.dart:191:13 - prefer_const_constructors
+warning - Unused import: 'dart:convert' - lib\services\api_service.dart:1:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\utils\app_theme.dart:26:20 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\app_drawer.dart:94:60 - deprecated_member_use
+warning - The asset directory 'assets/images/' doesn't exist - pubspec.yaml:46:7 - asset_directory_does_not_exist
+warning - The asset directory 'assets/icons/' doesn't exist - pubspec.yaml:47:7 - asset_directory_does_not_exist
+
+flutter : 90 issues found. (ran in 9.8s)
+At C:\Users\qowiy\AppData\Local\Temp\ps-script-8917ddbf-7a9f-40a1-b5c6-8f76db4119bb.ps1:107 char:1
++ flutter analyze --no-fatal-infos 2>&1 | Out-File -FilePath "analyzer_ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (90 issues found. (ran in 9.8s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

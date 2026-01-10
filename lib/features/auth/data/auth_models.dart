@@ -1,8 +1,8 @@
-/// Auth Models
-/// 
-/// Based on API_CONTRACT.md v1.0
-/// Models for authentication endpoints
-/// snake_case from API is converted to camelCase
+// Auth Models
+// 
+// Based on API_CONTRACT.md v1.0
+// Models for authentication endpoints
+// snake_case from API is converted to camelCase
 
 /// Authenticated User Model
 /// 

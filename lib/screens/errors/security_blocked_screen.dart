@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../features/auth/domain/auth_state.dart';
-import '../../core/errors/failure.dart';
 import '../../core/errors/error_code.dart';
 import '../../utils/app_theme.dart';
 
@@ -71,7 +70,7 @@ class SecurityBlockedScreen extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               AppTheme.errorColor,
-              AppTheme.errorColor.withOpacity(0.8),
+              AppTheme.errorColor.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -117,23 +116,22 @@ class SecurityBlockedScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   const SizedBox(height: 16),
-                  if (expirationInfo != null)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        expirationInfo,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    child: Text(
+                      expirationInfo,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   if (blockUntil != null && !isBlocked)
                     ElevatedButton(

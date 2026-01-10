@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../widgets/app_drawer.dart';
 import '../../utils/app_theme.dart';
 import '../../providers/auth_state_provider.dart';
-import '../../features/auth/data/auth_models.dart';
 import 'admin_users_screen.dart';
 import 'admin_manage_user_screen.dart';
 import 'admin_master_data_screen.dart';
@@ -31,7 +30,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     ),
     DrawerItem(
       title: 'Master Data',
-      icon: Icons.database,
+      icon: Icons.dashboard,
       route: '/admin/master-data',
     ),
   ];

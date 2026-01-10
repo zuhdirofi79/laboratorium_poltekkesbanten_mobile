@@ -66,7 +66,7 @@ class AuthStateProvider with ChangeNotifier {
       
       _authState = state;
       notifyListeners();
-    } catch (e, stackTrace) {
+    } catch (e) {
       debugPrint('Error initializing auth state: $e');
       _authState = AuthError(
         ServerFailure(
@@ -117,7 +117,7 @@ class AuthStateProvider with ChangeNotifier {
       _authState = AuthError(e);
       notifyListeners();
       return false;
-    } catch (e, stackTrace) {
+    } catch (e) {
       debugPrint('Unexpected error during login: $e');
       _authState = AuthError(
         ServerFailure(
@@ -146,7 +146,7 @@ class AuthStateProvider with ChangeNotifier {
       await _authRepository!.logout();
       _authState = const Unauthenticated();
       notifyListeners();
-    } catch (e, stackTrace) {
+    } catch (e) {
       debugPrint('Error during logout: $e');
       // Even if logout fails, clear local state
       _authState = const Unauthenticated();
@@ -169,7 +169,7 @@ class AuthStateProvider with ChangeNotifier {
       _authState = Authenticated(user);
       notifyListeners();
       return true;
-    } on AuthFailure catch (e) {
+    } on AuthFailure {
       // Token invalid - clear and go to unauthenticated
       _authState = const Unauthenticated();
       notifyListeners();
@@ -186,7 +186,7 @@ class AuthStateProvider with ChangeNotifier {
       _authState = AuthError(e);
       notifyListeners();
       return false;
-    } catch (e, stackTrace) {
+    } catch (e) {
       debugPrint('Unexpected error refreshing user: $e');
       _authState = AuthError(
         ServerFailure(

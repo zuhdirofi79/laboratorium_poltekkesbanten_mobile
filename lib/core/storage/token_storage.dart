@@ -25,9 +25,7 @@ class TokenStorage {
   /// Token is treated as opaque string per contract
   Future<bool> saveToken(String token) async {
     try {
-      if (_prefs == null) {
-        _prefs = await SharedPreferences.getInstance();
-      }
+      _prefs ??= await SharedPreferences.getInstance();
       return await _prefs!.setString(AppConstants.tokenStorageKey, token);
     } catch (e, stackTrace) {
       Logger.error('Failed to save token', e, stackTrace);
@@ -62,9 +60,7 @@ class TokenStorage {
   /// Called on logout or when token is invalid
   Future<bool> clearToken() async {
     try {
-      if (_prefs == null) {
-        _prefs = await SharedPreferences.getInstance();
-      }
+      _prefs ??= await SharedPreferences.getInstance();
       return await _prefs!.remove(AppConstants.tokenStorageKey);
     } catch (e, stackTrace) {
       Logger.error('Failed to clear token', e, stackTrace);

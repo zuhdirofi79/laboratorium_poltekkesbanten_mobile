@@ -137,17 +137,17 @@ class ApiClient {
             );
         }
       } on SocketException catch (e) {
-        Logger.error('Network error', e, null);
-        throw NetworkFailure(message: 'No internet connection');
+        Logger.error('Network error', e);
+        throw const NetworkFailure(message: 'No internet connection');
       } on HttpException catch (e) {
-        Logger.error('HTTP error', e, null);
+        Logger.error('HTTP error', e);
         throw NetworkFailure(message: 'HTTP error: ${e.message}');
       } on FormatException catch (e) {
-        Logger.error('Format error', e, null);
-        throw NetworkFailure(message: 'Invalid response format');
+        Logger.error('Format error', e);
+        throw const NetworkFailure(message: 'Invalid response format');
       } catch (e) {
         if (e is Failure) rethrow;
-        Logger.error('Request error', e, null);
+        Logger.error('Request error', e);
         throw NetworkFailure(message: 'Request failed: $e');
       }
       
@@ -169,8 +169,8 @@ class ApiClient {
         try {
           jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
         } catch (e) {
-          Logger.error('Failed to parse JSON response', e, null);
-          throw NetworkFailure(message: 'Invalid JSON response');
+          Logger.error('Failed to parse JSON response', e);
+          throw const NetworkFailure(message: 'Invalid JSON response');
         }
       }
       
@@ -202,7 +202,7 @@ class ApiClient {
       return jsonResponse ?? {};
     } catch (e) {
       if (e is Failure) rethrow;
-      Logger.error('Unexpected error in API client', e, null);
+      Logger.error('Unexpected error in API client', e);
       throw NetworkFailure(message: 'Unexpected error: $e');
     }
   }

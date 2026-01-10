@@ -73,7 +73,7 @@ class _RateLimitScreenState extends State<RateLimitScreen> {
             end: Alignment.bottomCenter,
             colors: [
               AppTheme.primaryColor,
-              AppTheme.primaryColor.withOpacity(0.8),
+              AppTheme.primaryColor.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -121,7 +121,7 @@ class _RateLimitScreenState extends State<RateLimitScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Text(

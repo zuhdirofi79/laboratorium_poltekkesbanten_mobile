@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../features/plp_approval/presentation/plp_approval_provider.dart';
 import '../../features/plp_approval/presentation/plp_approval_state.dart';
-import '../../features/plp_approval/domain/equipment_request_detail.dart';
 import '../../core/errors/failure.dart';
 import '../../core/errors/error_code.dart';
 import '../../utils/app_theme.dart';

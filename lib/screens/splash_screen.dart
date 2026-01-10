@@ -21,28 +21,27 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuth() async {
     await Future.delayed(const Duration(seconds: 2));
     
+    if (!mounted) return;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.loadUserFromStorage();
     
-    if (mounted) {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token');
-      
-      if (token != null && authProvider.user != null) {
-        // Load profile and navigate based on role
-        await authProvider.loadProfile();
-        if (mounted) {
-          _navigateByRole(authProvider.user?.role ?? '');
-        }
-      } else {
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/login');
-        }
-      }
+    if (!mounted) return;
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    
+    if (token != null && authProvider.user != null) {
+      // Load profile and navigate based on role
+      await authProvider.loadProfile();
+      if (!mounted) return;
+      _navigateByRole(authProvider.user?.role ?? '');
+    } else {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed('/login');
     }
   }
 
   void _navigateByRole(String role) {
+    if (!mounted) return;
     switch (role.toLowerCase()) {
       case 'admin':
         Navigator.of(context).pushReplacementNamed('/admin');

@@ -69,7 +69,7 @@ class AuthRepository {
       
       Logger.info('Current user retrieved: ${user.username}');
       return user;
-    } on AuthFailure catch (e) {
+    } on AuthFailure {
       // Token invalid/expired - clear token
       Logger.warning('Auth failed getting user, clearing token');
       await _tokenStorage.clearToken();

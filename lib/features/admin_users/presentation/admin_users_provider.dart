@@ -9,7 +9,6 @@ import '../data/admin_users_repository.dart';
 import '../data/admin_users_api.dart';
 import '../domain/admin_user.dart';
 import 'admin_users_state.dart';
-import '../../../features/auth/data/auth_models.dart';
 
 /// Admin Users Provider
 /// 
@@ -159,6 +158,77 @@ class AdminUsersProvider with ChangeNotifier {
       notifyListeners();
     } catch (e, stackTrace) {
       Logger.error('Unexpected error loading admin users', e, stackTrace);
+      _state = AdminUsersError(
+        ServerFailure(
+          message: 'Unexpected error: $e',
+          errorCode: ErrorCode.unknown,
+        ),
+      );
+      notifyListeners();
+    }
+  }
+  
+  /// Load manage users (with roles)
+  /// 
+  /// Uses the /admin/manage-users endpoint instead of /admin/users
+  /// Automatically:
+  /// - sets Loading state
+  /// - handles Empty vs Loaded
+  /// - exposes Failure for UI
+  /// NO navigation logic - UI handles based on state
+  Future<void> loadManageUsers({String? search}) async {
+    // Wait for initialization if needed
+    if (_repository == null) {
+      await _initialize();
+    }
+    
+    if (_repository == null) {
+      _state = AdminUsersError(
+        ServerFailure(
+          message: 'Admin users repository not initialized',
+          errorCode: ErrorCode.unknown,
+        ),
+      );
+      notifyListeners();
+      return;
+    }
+
+    try {
+      _state = const AdminUsersLoading();
+      notifyListeners();
+      
+      Logger.info('Loading manage users via provider (search: $search)');
+      
+      final users = await _repository!.getManageUsers(search: search);
+      
+      // Handle Empty vs Loaded
+      if (users.isEmpty) {
+        _state = const AdminUsersEmpty();
+        Logger.info('Manage users empty');
+      } else {
+        _state = AdminUsersLoaded(users);
+        Logger.info('Manage users loaded: ${users.length} items');
+      }
+      
+      notifyListeners();
+    } on AuthFailure catch (e) {
+      Logger.warning('Auth failure loading manage users: ${e.message}');
+      _state = AdminUsersError(e);
+      notifyListeners();
+    } on SecurityBlockedFailure catch (e) {
+      Logger.warning('Security blocked loading manage users: ${e.message}');
+      _state = AdminUsersError(e);
+      notifyListeners();
+    } on RateLimitFailure catch (e) {
+      Logger.warning('Rate limited loading manage users: ${e.message}');
+      _state = AdminUsersError(e);
+      notifyListeners();
+    } on Failure catch (e) {
+      Logger.error('Failure loading manage users: ${e.message}');
+      _state = AdminUsersError(e);
+      notifyListeners();
+    } catch (e, stackTrace) {
+      Logger.error('Unexpected error loading manage users', e, stackTrace);
       _state = AdminUsersError(
         ServerFailure(
           message: 'Unexpected error: $e',

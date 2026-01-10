@@ -6,7 +6,6 @@ import '../../features/admin_users/domain/admin_user.dart';
 import '../../core/errors/failure.dart';
 import '../../core/errors/error_code.dart';
 import '../../utils/app_theme.dart';
-import '../../features/auth/data/auth_models.dart';
 
 class AdminEditUserScreen extends StatefulWidget {
   final AdminUser user;

@@ -1,39 +1,41 @@
+import 'package:flutter/foundation.dart';
+
 /// Simple Logger Utility
 /// 
 /// Production-ready logger that can be extended later
-/// Currently uses print, but can be swapped with logging package
+/// Uses debugPrint for production-safe logging
 class Logger {
   static const bool _debugMode = true; // Can be controlled via build config
   
   static void debug(String message, [Object? error, StackTrace? stackTrace]) {
     if (_debugMode) {
-      print('[DEBUG] $message');
+      debugPrint('[DEBUG] $message');
       if (error != null) {
-        print('[ERROR] $error');
+        debugPrint('[ERROR] $error');
       }
       if (stackTrace != null) {
-        print('[STACK] $stackTrace');
+        debugPrint('[STACK] $stackTrace');
       }
     }
   }
   
   static void info(String message) {
     if (_debugMode) {
-      print('[INFO] $message');
+      debugPrint('[INFO] $message');
     }
   }
   
   static void warning(String message) {
-    print('[WARNING] $message');
+    debugPrint('[WARNING] $message');
   }
   
   static void error(String message, [Object? error, StackTrace? stackTrace]) {
-    print('[ERROR] $message');
+    debugPrint('[ERROR] $message');
     if (error != null) {
-      print('[ERROR_DETAIL] $error');
+      debugPrint('[ERROR_DETAIL] $error');
     }
     if (stackTrace != null) {
-      print('[STACK] $stackTrace');
+      debugPrint('[STACK] $stackTrace');
     }
   }
 }

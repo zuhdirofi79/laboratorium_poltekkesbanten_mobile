@@ -19,7 +19,7 @@ class Database {
     private const DB_HOST = 'localhost';
     private const DB_NAME = 'u708283844_sisenes';
     private const DB_USER = 'u708283844_sisenes';  // UPDATE THIS
-    private const DB_PASS = 'FF{D]}J1!]Pj';  // UPDATE THIS
+    private const DB_PASS = 'h*S2TmYSrQ';  // UPDATE THIS
     private const DB_CHARSET = 'utf8mb4';
     
     private function __construct() {
